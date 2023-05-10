@@ -171,7 +171,6 @@ class Favorite(models.Model):
         related_name='favorites',
     )
 
-
     class Meta:
         constraints = [
             models.UniqueConstraint(
