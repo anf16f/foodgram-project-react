@@ -37,13 +37,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
         methods=('post', 'delete'),
         permission_classes=(permissions.IsAuthenticated,)
     )
-    def _p_d_method(self, queryset):
+    def _favorite_cart_post_delete(self, queryset):
         recipe = self.get_object()
         if self.request.method == 'DELETE':
             get_object_or_404(queryset, recipe_id=recipe.id).delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         if queryset.filter(recipe=recipe).exists():
-            raise ValidationError('Рецепт уже добавлен')
+            return Response(
+                'Рецепт уже добавлен', status=status.HTTP_400_BAD_REQUEST)
         queryset.create(recipe=recipe)
         serializer = RecipeShortSerializer(recipe, context={
             'recipe': recipe,
@@ -56,13 +57,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
             permission_classes=[permissions.IsAuthenticated],
             methods=['POST', 'DELETE'], )
     def favorite(self, request, pk=None):
-        return self._p_d_method(request.user.favorites)
+        return self._favorite_cart_post_delete(request.user.favorites)
 
     @action(detail=True,
             permission_classes=[permissions.IsAuthenticated],
             methods=['POST', 'DELETE'], )
     def shopping_cart(self, request, pk=None):
-        return self._p_d_method(request.user.cart)
+        return self._favorite_cart_post_delete(request.user.cart)
 
     @action(
         detail=False,
@@ -113,7 +114,7 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 @api_view(['POST', 'DELETE'])
-def subscribe_API_View(request, user_id):
+def subscribe(request, user_id):
     user = request.user
     following = get_object_or_404(User, id=user_id)
 
@@ -128,21 +129,21 @@ def subscribe_API_View(request, user_id):
         return Response(serializer.data,
                         status=status.HTTP_201_CREATED)
 
-    if request.method == 'DELETE':
-        if not Subscribe.objects.filter(
-            user=user,
-            following=following
-        ).exists():
-            raise ValidationError(
-                'Вы не подписаны на этого автора'
-            )
-        subscription = Subscribe.objects.filter(
-            user=user,
-            following=following
+    if not Subscribe.objects.filter(
+        user=user,
+        following=following
+    ).exists():
+        return Response(
+            'Вы не подписаны на этого автора',
+            status=status.HTTP_400_BAD_REQUEST
         )
+    subscription = Subscribe.objects.filter(
+        user=user,
+        following=following
+    )
 
-        subscription.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    subscription.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class SubscriptionsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
