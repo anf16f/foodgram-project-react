@@ -1,5 +1,3 @@
-# praktikum_new_diplom
-![yamdb_workflow](https://github.com/anf16f/foodgram-project-react/actions/workflows/yamdb_workflow.yml/badge.svg)
 
 # Проект foodgram
 
@@ -14,7 +12,9 @@ http://84.201.179.109
 Данные для доступа в админ-панель:
 
 username: admin
+
 email: admin@yandex.ru
+
 password: admin
 
 # Документация
