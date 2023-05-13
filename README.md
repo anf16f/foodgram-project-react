@@ -1,5 +1,3 @@
-# praktikum_new_diplom
-![yamdb_workflow](https://github.com/anf16f/foodgram-project-react/actions/workflows/yamdb_workflow.yml/badge.svg)
 
 # Проект foodgram
 
