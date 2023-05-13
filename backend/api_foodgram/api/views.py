@@ -12,6 +12,7 @@ from recipes.models import (Ingredient, Recipe, RecipeIngredient,
                             ShopingCart, Subscribe, Tag)
 from users.models import User
 from .filters import IngredientFilter, RecipeFilter
+from .pagination import CustomPageNumberPagination
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (IngredientSerializer, RecipeCreateSerializer,
                           RecipeSerializer, RecipeShortSerializer,
@@ -23,9 +24,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     permission_classes = (IsAuthorOrReadOnly,)
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter,)
+    filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
-    search_fields = ('name', 'text')
+    pagination_class = CustomPageNumberPagination
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
@@ -157,13 +158,3 @@ class SubscriptionsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     def get_queryset(self):
         return User.objects.filter(following__user=self.request.user)
-
-    def list(self, request, *args, **kwargs):
-        page = self.paginate_queryset(self.get_queryset())
-        serializer = SubscriptionsSerializer(
-            page, many=True,
-            context={'request': request,
-                     'args': args,
-                     'kwargs': kwargs}
-        )
-        return self.get_paginated_response(serializer.data)

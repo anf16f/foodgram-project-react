@@ -1,4 +1,5 @@
 from django.db import models
+from django.core import validators
 
 from users.models import User
 
@@ -75,9 +76,11 @@ class Recipe(models.Model):
         verbose_name='Рецепт',
         help_text='Название рецепта',
     )
-    cooking_time = models.DurationField(
-        blank=False,
-        null=False,
+    cooking_time = models.PositiveSmallIntegerField(
+        verbose_name='Время приготовления, мин',
+        validators=(validators.MinValueValidator(
+            1, message='Минимальное время приготовления 1 минута'),
+        )
     )
     image = models.ImageField(
         upload_to='recipes/',
