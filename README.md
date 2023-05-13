@@ -14,7 +14,9 @@ http://84.201.179.109
 Данные для доступа в админ-панель:
 
 username: admin
+
 email: admin@yandex.ru
+
 password: admin
 
 # Документация
