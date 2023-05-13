@@ -7,11 +7,11 @@ from rest_framework import (filters, mixins,
 from rest_framework.decorators import action, api_view
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
-from rest_framework.serializers import ValidationError
 
 from recipes.models import (Ingredient, Recipe, RecipeIngredient,
                             ShopingCart, Subscribe, Tag)
 from users.models import User
+from .filters import IngredientFilter, RecipeFilter
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (IngredientSerializer, RecipeCreateSerializer,
                           RecipeSerializer, RecipeShortSerializer,
@@ -24,7 +24,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     serializer_class = RecipeSerializer
     permission_classes = (IsAuthorOrReadOnly,)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter,)
-    filterset_fields = ('tags', 'author', 'ingredients')
+    filterset_class = RecipeFilter
     search_fields = ('name', 'text')
 
     def get_serializer_class(self):
@@ -101,8 +101,10 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = (permissions.AllowAny,)
-    filter_backends = (filters.SearchFilter,)
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
+    filterset_class = IngredientFilter
     search_fields = ('name')
+    pagination_class = None
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -111,6 +113,7 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = (permissions.AllowAny,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name')
+    pagination_class = None
 
 
 @api_view(['POST', 'DELETE'])
@@ -157,6 +160,10 @@ class SubscriptionsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     def list(self, request, *args, **kwargs):
         page = self.paginate_queryset(self.get_queryset())
-        serializer = SubscriptionsSerializer(page, many=True,
-                                             context={'request': request})
+        serializer = SubscriptionsSerializer(
+            page, many=True,
+            context={'request': request,
+                     'args': args,
+                     'kwargs': kwargs}
+        )
         return self.get_paginated_response(serializer.data)

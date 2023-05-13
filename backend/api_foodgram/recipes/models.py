@@ -146,7 +146,9 @@ class ShopingCart(models.Model):
     recipe = models.ForeignKey(
         Recipe,
         verbose_name='Рецепт в корзину продуктов',
-        on_delete=models.CASCADE)
+        on_delete=models.CASCADE,
+        related_name='cart'
+    )
 
     class Meta:
         constraints = [

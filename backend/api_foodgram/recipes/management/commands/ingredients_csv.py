@@ -6,8 +6,7 @@ from django.core.management.base import BaseCommand
 
 from recipes.models import Ingredient
 
-CSV_DIR = Path(settings.BASE_DIR).parent.parent
-print(CSV_DIR)
+CSV_DIR = Path(settings.BASE_DIR)
 
 
 class Command(BaseCommand):
@@ -16,7 +15,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         with open(
-            f'{CSV_DIR}/data/ingredients.csv',
+            f'{CSV_DIR}/ingredients.csv',
             'r',
             encoding='utf-8'
         ) as csv_file:
