@@ -46,4 +46,4 @@ class RecipeFilter(filters.FilterSet):
     def get_is_in_shopping_cart(self, queryset, name, value):
         return Recipe.objects.filter(
             cart__user=self.request.user
-        )  #
+        )
