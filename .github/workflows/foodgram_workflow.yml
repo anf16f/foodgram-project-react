@@ -41,7 +41,7 @@ jobs:
         with:
           context: ./backend/api_foodgram/
           push: true
-          tags: ${{ secrets.USER }}/foodgram_backend:latest
+          tags: anf16f/foodgram_backend:latest
 
   deploy:
     runs-on: ubuntu-latest
