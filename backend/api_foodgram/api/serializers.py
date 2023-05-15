@@ -1,11 +1,10 @@
 from django.core import validators
 from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer
+from recipes.models import Ingredient, Recipe, RecipeIngredient, Subscribe, Tag
 from rest_framework import serializers
-
-from recipes.models import (Ingredient, Recipe, RecipeIngredient,
-                            Subscribe, Tag)
 from users.models import User
+
 from .fields import Base64ImageField
 
 
